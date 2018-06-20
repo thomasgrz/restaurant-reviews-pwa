@@ -11,6 +11,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
   initMap(); // added 
   fetchNeighborhoods();
   fetchCuisines();
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('../index.js')
+      .then((reg)=>{
+        console.log(`service worker has been registered for ${reg.scope}`);
+      })
+      .catch((error)=>{
+        console.log(error);
+      })
+    })
+  }
 });
 
 /**
@@ -78,7 +89,7 @@ initMap = () => {
         scrollWheelZoom: false
       });
   L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
-    mapboxToken: '<your MAPBOX API KEY HERE>',
+    mapboxToken: '<YOUR API KEY HERE>',
     maxZoom: 18,
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
       '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -156,9 +167,22 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
 
+  /* image size variables */
+  let imageID = restaurant.photograph.slice(0,-4);
+
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.setAttribute('srcset',
+    `/images/${imageID}-220w.jpg 220w,
+     /images/${imageID}-300w.jpg 300w,
+     /images/${imageID}-430w.jpg 430w`);
+  image.setAttribute('sizes',
+    `(max-width: 550px) 220w,
+     (max-width: 900px) 300w,
+      430w`);
+  image.setAttribute('alt',
+    `a photo of ${restaurant.name} in ${restaurant.neighborhood}`);
   li.append(image);
 
   const name = document.createElement('h1');
@@ -176,6 +200,7 @@ createRestaurantHTML = (restaurant) => {
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
+  more.setAttribute('aria-role', 'button');
   li.append(more)
 
   return li
