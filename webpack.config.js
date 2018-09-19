@@ -1,14 +1,36 @@
 const path = require("path");
+const webpack = require("webpack");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const 
 config = {
-    devtool: "cheap-eval-source-map",
-    mode: "development",
-    entry: ["./src/js/main.js", "./src/js/dbhelper.js","./src/js/restaurant_info.js","./src/index.js","./src/js/config.js"],
+    mode:"production",
+    target:"web",
+    entry:{
+        index: ["./src/js/index.js"],
+    },
     output:{
-        filename: "[name].bundle.js",
+        filename: "[name].js",
         path: path.resolve(__dirname, "dist")
     },
+    optimization:{
+            minimize: false,
+            minimizer: [
+                new UglifyJsPlugin({
+                    parallel: true,  // Webpack default
+                    cache: true,      // Webpack default
+                    uglifyOptions: {
+                        /*
+                            inlining is broken sometimes where inlined function uses the same variable name as inlining function.
+                            See https://github.com/mishoo/UglifyJS2/issues/2842, https://github.com/mishoo/UglifyJS2/issues/2843
+                         */
+                        compress: { inline:false },
+
+                    },
+                })
+            ]}
+    ,
     module:{
+        noParse:/mapbox|leaflet/,
         rules:[
             {
                 test: /\.js$/,
@@ -19,7 +41,7 @@ config = {
                         presets:["@babel/preset-env"]
                     }
                 }
-            }
+            },
         ]
     }
 }
