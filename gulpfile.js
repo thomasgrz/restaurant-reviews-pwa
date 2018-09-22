@@ -45,7 +45,7 @@ gulp.task("css", function(){
 });
 
 gulp.task("js", function(){
-    return gulp.src([paths.srcJS, excludeDirectory("js"),"!./src/js/index.js"])
+    return gulp.src([paths.srcJS, "./src/manifest.json",excludeDirectory("js"),"!./src/js/index.js","!./src/gulpfile.js"])
         .pipe(gulp.dest(paths.tmp))
 });
 
@@ -55,7 +55,7 @@ gulp.task("bundle",function(){
     .pipe(gulp.dest(paths.tmp))
 })
 gulp.task("images",function(){
-    return gulp.src(paths.srcImages)
+    return gulp.src([paths.srcImages,"./src/images/*.png"])
         .pipe(gulp.dest([paths.tmp+"/images"]))
 })
 
@@ -92,3 +92,8 @@ const build = gulp.series("clean:tmp","copy")
 gulp.watch([paths.src+"/**/*"], build)
 
 gulp.task("default", build)
+
+gulp.task("dist",function(){
+    return gulp.src(["./tmp/**/*"])
+        .pipe(gulp.dest([paths.dist]))
+})
