@@ -3,7 +3,7 @@
 Restaurant Reviews is PWA (Progressive Web App) which is a part of the Google Developer Scholarship Program and may contain assets contributed from various third party sources therein.
 Requirements: Node.js, Python2.7 or Python3, and Chrome or similar web browser.
 
-If you have node installed <strong>begin by navigating to the "stage-two-server" directory</strong in your command line or terminal and enter the command "node app.js" which should launch the relevant server.
+If you have node installed <strong>begin by navigating to the "stage-two-server" directory</strong> in your command line or terminal and enter the command "node app.js" which should launch the relevant server.
 Next, <strong>once the "stage-two-server" server is running</strong>, simultaneously navigate in another command line or terminal tab to the "dist" directory and enter the command "python -m SimpleHTTPServer 8000" if you have Python2.7 or enter "python -m http.server" if you have Python3.
 Then, navigate in your web browser to "http://localhost:8000" to preview the Restaurant Reviews application.
 
