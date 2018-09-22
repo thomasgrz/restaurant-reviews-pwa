@@ -1,10 +1,10 @@
-This web project is currently meant to be run out of the "tmp" directory while the "stage-two-server" directory is also running.
-It requires Node.js be installed on the local machine as well.
 
-First, clone or download the repo.
-Next, within the "stage-two-server" directory type the cmd "node app.js" to launch the server that the tmp directory depends on.
-Then, within the "tmp" directory enter the cmd "python -m SimpleHTTPServer" (python 2.7) or "python http.server" (python 3).
-Then, in your browser navigate to "http://localhost:8000" in order to see the Restaurant Reviews application.
-It should pull data from the stage-two-server server on its first launch and then cache that data for offline functionality.
 
-If things are working and set up properly you should be able to kill the stage-two-server server after the websites initial load and still be able to navigate the site as if it were offline--this website uses a combinateino of the Caches API and the IndexedDB API for offline functionality.
+Restaurant Reviews is PWA (Progressive Web App) which is a part of the Google Developer Scholarship Program and may contain assets contributed from various third party sources therein.
+Requirements: Node.js, Python2.7 or Python3, and Chrome or similar web browser.
+
+If you have node installed begin by navigating to the "stage-two-server" directory in your command line or terminal and enter the command "node app.js" which should launch the relevant server.
+Next, once the "stage-two-server" server is running, simultaneously navigate in another command line or terminal tab to the "dist" directory and enter the command "python -m SimpleHTTPServer 8000" if you have Python2.7 or enter "python -m http.server" if you have Python3.
+Then, navigate in your web browser to "http://localhost:8000" to preview the Restaurant Reviews application.
+
+Note that it is pulling data from the "stage-two-server" server launched in the first step, but even if you were to kill that server after the initial launch, the web application should have all the relevant information stored via the Caches API and the IndexedDB API built into most modern browsers to continue functioning as if it were still online!
