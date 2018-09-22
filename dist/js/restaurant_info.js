@@ -55,7 +55,7 @@ initMap = () => {
  * Get current restaurant from page URL.
  */
 fetchRestaurantFromURL = (callback) => {
-  
+  debugger
   if (self.restaurant) { // restaurant already fetched!
     callback(null, self.restaurant)
     return;
