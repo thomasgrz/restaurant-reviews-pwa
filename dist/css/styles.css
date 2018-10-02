@@ -307,7 +307,22 @@ nav h1 a {
   margin:auto;
   color: #666;
 }
-
+#review-form{
+  margin-left:auto;
+  margin-right:auto;
+  width: 70%;
+  font-family: inherit;
+  color:inherit;
+  border: 5px black solid;
+  background-color:white;
+  display:block;
+}
+#review-form textarea{
+  width:80%;
+}
+#review-form label{
+  color:black;
+}
 
 /*largest breakpoint */
 @media screen and (min-width: 1120px){

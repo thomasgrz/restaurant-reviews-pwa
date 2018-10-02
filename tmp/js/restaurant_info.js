@@ -166,7 +166,7 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-  date.innerHTML = review.date;
+  date.innerHTML = new Date(review.createdAt).toGMTString();
   li.appendChild(date);
 
   const rating = document.createElement('p');
@@ -206,3 +206,35 @@ getParameterByName = (name, url) => {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
+function addReview(form){
+  let id = this.window.location.search.slice(4,);
+  let reviewerName = form.name.value
+  let reviewRating = form.rating.value
+  let reviewComments = form.review.value
+  const ul = document.getElementById("reviews-list")
+  ul.appendChild(createReviewHTML({
+    name:reviewerName,
+    rating:reviewRating,
+    comments:reviewComments,
+    date: new Date().toGMTString()
+  }))
+  form.reset()
+  return fetch("http://localhost:1337/reviews/",{
+    method: "POST",
+    headers:{
+      "content-type": "application/json; charset=utf-8"
+    },
+    body: JSON.stringify({
+      restaurant_id: id,
+      name: reviewerName,
+      rating: reviewRating,
+      comments: reviewComments
+    })
+  })
+  .catch((err)=>console.log(err))
+  
+}
+
+window.addEventListener("offline", function(e){
+  console.log(e,"youre offline, friendo")
+})

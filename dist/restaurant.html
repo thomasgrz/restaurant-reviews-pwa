@@ -41,15 +41,29 @@
       <img id="restaurant-img">
       <p id="restaurant-address"></p>
       <table id="restaurant-hours"></table>
+
+      <section id="review-form">
+          <form action="" onsubmit="">
+            <label for="name">Your name:</label></br>
+            <input name="name" id="name" type="text"/></br>
+            <label for="rating">Your rating:</label></br>
+            <select name="rating" id="rating">
+              <option name="rating" value="dist">""</option>
+              <option name="rating" value="1">1/4</option>
+              <option name="rating" value="2">2/4</option>
+              <option name="rating" value="3">3/4</option>
+              <option name="rating" value="4">4/4</option>
+            </select></br>
+            <label for="review">Your review:</label></br>
+            <textarea name="review" id="review" col="100" row "100"></textarea></br>
+            <input type="button"name="button" value="submit" onclick="return addReview(this.form)"/>
+          </form>
+        </section>
+    </section>
     </section>
     <!-- end restaurant -->
     <!-- Beginning reviews -->
-    <section id="review-form">
-      <form>
-        <label for="name"></label>
-        <input id="name" type="text" value="name"/>
-      </form>
-    </section>
+   
     <section id="reviews-container">
       <ul id="reviews-list"></ul>
     </section>
@@ -69,6 +83,8 @@
 
   <script type="text/javascript" src="js/dbhelper.js"></script>
   <!-- Main javascript file -->
+  <script type="text/javascript" src="js/formFunctionality.js"></script>
+
   <script type="text/javascript" src="js/restaurant_info.js"></script>
   <!-- Google Maps -->
  <!--  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_tKbW6A5pQ-eupxI56myUnHLqYCzOjKo&libraries=places&callback=initMap"></script> -->
