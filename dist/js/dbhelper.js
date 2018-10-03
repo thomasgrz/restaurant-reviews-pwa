@@ -41,7 +41,6 @@ class DBHelper {
         }
       })
       .then((json)=>{ 
-        debugger
         return callback(null, json)
       })
       .catch((error)=>{
