@@ -1,5 +1,5 @@
 var idb = require("idb")
-var staticCacheName = 'reviews-static-v9';
+var staticCacheName = 'reviews-static-v11';
 self.addEventListener('install', function (event) {
   event.waitUntil(
   /**
@@ -7,7 +7,15 @@ self.addEventListener('install', function (event) {
    */
   Promise.all([caches.open(staticCacheName).then(function (cache) {
     //add (relatively) static assets to cache
-    return cache.addAll(['/', 'index.html', 'restaurant.html', 'css/styles.css', 'js/main.js', 'js/restaurant_info.js']);
+    return cache.addAll([
+      '/', 
+      'index.html', 
+      'js/dbhelper.js',
+      'restaurant.html', 
+      'css/styles.css', 
+      'js/main.js', 
+      'js/restaurant_info.js'
+    ]);
   }), //add restaurants to idb
   dbPromise.then(function (db) {
     return getRestaurants().then(function (restaurants) {
@@ -28,6 +36,8 @@ self.addEventListener('install', function (event) {
     });
   })]));
 });
+
+
 self.addEventListener('activate', function (event) {
   event.waitUntil(caches.keys().then(function (namesOfCaches) {
     return Promise.all(namesOfCaches.filter(function (name) {
@@ -36,7 +46,6 @@ self.addEventListener('activate', function (event) {
       return caches.delete(nameThatDoesntMatch);
     }));
   }));
-  clients.claim();
 });
 self.addEventListener('fetch', function (event) {
   //parse the url the of the request
@@ -45,7 +54,6 @@ self.addEventListener('fetch', function (event) {
   var requestURLPath = new URL(event.request.url).pathname; //extract the port from the request url
 
   var serverPort = new URL(event.request.url).port; //if its a request for restaurant data....
-
   if (requestURLPath.includes("/restaurants") && serverPort == "1337") {
     return event.respondWith(dbPromise.then(function (db) {
       //open database and extract all the restaurant data
@@ -62,27 +70,14 @@ self.addEventListener('fetch', function (event) {
   else if (requestURLPath.includes("/reviews") && serverPort == "1337") {
       if (url.search.includes("?restaurant_id")) {
         //extract the restaurant_id number 
-        var id = url.search.match(/\d+$/); //create array to store reviews that match our search
-        // let arr = []
-        //respond to request with:
-
+        var id = url.search.match(/\d+$/); 
+         //respond to request with:
         return event.respondWith( //open idb on restaurants-db
         dbPromise.then(function (db) {
           //open a transaction, then open a cursor on the index 
           var tx = db.transaction("restaurant-reviews", "readonly");
           var store = tx.objectStore("restaurant-reviews"); //iterate over everything within the index
-          // store.index("restaurant_id").iterateCursor(cursor=>{
-          //     if(!cursor) return;
-          //     if(cursor.value.restaurant_id==id){
-          //         //push the relevant reviews requested by ID to the array
-          //         console.log(arr)
-          //         arr.push(cursor.value)
-          //     }
-          //     cursor.continue()
-          //     });
-          //log the relevant reviews to the console 
-          //create & return a response out of the array containing all relevent reviews
-
+          
           return store.getAll();
         }).then(function (reviews) {
           var arr = reviews.filter(function (review) {
@@ -99,11 +94,16 @@ self.addEventListener('fetch', function (event) {
     else {
         console.log(new URL(event.request.url));
         /*adapted from https://developers.google.com/web/ilt/pwa/caching-files-with-service-worker */
-
-        return event.respondWith( //reply from cached assets if avaialble or cache the resouce and reply
+        
+        let options = {}
+        if(url.pathname.includes("restaurant.html")){
+          options.ignoreSearch = true;
+        }
+        //reply from cached assets if avaialble or cache the resouce and reply
         //from the network
+        return event.respondWith( 
         caches.open(staticCacheName).then(function (cache) {
-          return cache.match(event.request).then(function (response) {
+          return cache.match(event.request,options).then(function (response) {
             return response || fetch(event.request).then(function (response) {
               cache.put(event.request, response.clone());
               return response;

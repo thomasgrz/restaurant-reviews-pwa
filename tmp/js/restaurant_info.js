@@ -146,14 +146,16 @@ fillReviewsHTML = (reviews = self.restaurant.id) => {
     return;
   }
   const ul = document.getElementById('reviews-list');
-  fetch(`http://localhost:1337/reviews/?restaurant_id=${reviews}`)
+  return fetch(`http://localhost:1337/reviews/?restaurant_id=${reviews}`)
   .then((response)=>response.json())
   .then((reviews)=>{
     reviews.forEach(review => {
       ul.appendChild(createReviewHTML(review));
     });
+  }).then(()=>{
+    container.appendChild(ul);
   })
-  container.appendChild(ul);
+  .catch((error)=>console.log("error in review creation"))
 }
 
 /**
@@ -231,7 +233,7 @@ function addReview(form){
       comments: reviewComments
     })
   })
-  .catch((err)=>console.log(err))
+  .catch((err)=>console.log("attempted to add review to server"))
   
 }
 

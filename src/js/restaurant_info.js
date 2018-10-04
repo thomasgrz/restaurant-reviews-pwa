@@ -150,7 +150,6 @@ fillReviewsHTML = (reviews = self.restaurant.id) => {
   .then((response)=>response.json())
   .then((reviews)=>{
     reviews.forEach(review => {
-      debugger
       ul.appendChild(createReviewHTML(review));
     });
   }).then(()=>{
@@ -234,7 +233,7 @@ function addReview(form){
       comments: reviewComments
     })
   })
-  .catch((err)=>console.log(err))
+  .catch((err)=>console.log("attempted to add review to server"))
   
 }
 

@@ -32,8 +32,6 @@ class DBHelper {
   //   xhr.send();
   // }
   static fetchFromNetwork(callback){
-    
-
     return fetch(DBHelper.DATABASE_URL) 
       .then((response)=>{
         if(response.status==200){
@@ -41,19 +39,16 @@ class DBHelper {
         }
       })
       .then((json)=>{ 
-        debugger
         return callback(null, json)
       })
-      .catch((error)=>{
-        // idb.open("restaurants-db").then((db)=>{
-        //   const tx = db.transaction("restaurants","readonly")
-        //   const store = tx.objectStore("restaurants");
-        //   return store.getAll();
-        // console.log("service worker did not respond in time")
-        // }).then((allRestaurants)=>{
-        //   return callback(null, allRestaurants)
-        // })
-        console.error("ah alas theres been an error while fetching :// \n",error)
+      .catch(()=>{
+        idb.open("restaurants-db",1).then((db)=>{
+          const tx = db.transaction("restaurants","readonly")
+          const store = tx.objectStore("restaurants");
+          return store.getAll();
+        }).then((allRestaurants)=>{
+          return callback(null, allRestaurants)
+        })
       })
   }
 
