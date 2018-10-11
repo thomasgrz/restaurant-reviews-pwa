@@ -271,7 +271,6 @@ class DBHelper {
   }
 
   static pushFavorite(id, status){
-    debugger
     if(navigator.onLine){
       fetch(`http://localhost:1337/restaurants/${id}/?is_favorite=${status}`,{
         method:"PUT"
