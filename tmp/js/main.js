@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
       })
     })
   }
+  DBHelper.submitOfflineReviews();
 });
 
 /**
@@ -166,7 +167,6 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
  */
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
-
   /* image size variables */
   let imageID = restaurant.id;
 
@@ -193,6 +193,7 @@ createRestaurantHTML = (restaurant) => {
   neighborhood.innerHTML = restaurant.neighborhood;
   li.append(neighborhood);
 
+
   const address = document.createElement('p');
   address.innerHTML = restaurant.address;
   li.append(address);
@@ -203,6 +204,17 @@ createRestaurantHTML = (restaurant) => {
   more.setAttribute('role', 'button');
   li.append(more)
 
+  const star = document.createElement("span")
+  star.setAttribute("class","star")
+  star.innerHTML = "&#x2606"
+
+  const favorite = document.createElement("a")
+  favorite.setAttribute('class','favorite')
+  favorite.setAttribute("isfavorite",restaurant.is_favorite)
+  favorite.append(star)
+
+  li.append(favorite)
+  DBHelper.favoriteReviewLogic(favorite)
   return li
 }
 

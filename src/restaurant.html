@@ -42,11 +42,30 @@
       <p id="restaurant-address"></p>
       <table id="restaurant-hours"></table>
     </section>
-    <!-- end restaurant -->
-    <!-- Beginning reviews -->
     <section id="reviews-container">
+      <form id="review-form"action="">
+        <div id="form-label-wrapper">
+          <label for="name">Enter your name:</label>
+          <input type="text" id="name" name="name"/>
+          <label for="rating">Rate it:</label>
+          <select name="rating" id="rating">
+            <option value="1">1 out of 5</option>
+            <option value="2">2 out of 5</option>
+            <option value="3">3 out of 5</option>
+            <option value="4">4 out of 5</option>
+            <option value="5">5 out of 5</option>
+          </select>
+          <label for="review">Leave a review:</label>
+          <textarea name="review" id="review"></textarea>
+          <button type="submit">Submit</button>
+        </div>
+      </br>
+      </form>
       <ul id="reviews-list"></ul>
     </section>
+    <!-- end restaurant -->
+    <!-- Beginning reviews -->
+    
     <!-- End reviews -->
   </main>
   <!-- End main -->

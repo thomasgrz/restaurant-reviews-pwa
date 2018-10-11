@@ -170,7 +170,7 @@ nav h1 a {
 #restaurants-list .restaurant-img {
   background-color: #ccc;
   display: block;
-  margin: ;
+  margin: auto;
   height:auto;
   max-width: 100%;
 }
@@ -201,7 +201,18 @@ nav h1 a {
   text-transform: uppercase;
 
 }
+.star{
+  color: white;
+}
 
+a[isfavorite~="true"] span.star{
+  color:white; 
+}
+
+#restaurants-list li a.favorite[isfavorite~="true"]{
+  background-color:red; 
+  box-shadow:-5px -10px;
+}
 /* ====================== Restaurant Details ====================== */
 .inside header {
   position: relative;
@@ -306,24 +317,39 @@ nav h1 a {
 #restaurant-hours td {
   margin:auto;
   color: #666;
+  padding: 10px 20px;
 }
-#review-form{
-  margin-left:auto;
-  margin-right:auto;
-  width: 70%;
-  font-family: inherit;
-  color:inherit;
-  border: 5px black solid;
-  background-color:white;
-  display:block;
+#reviews-container{
+  max-width:650px;
+  margin:auto;
 }
-#review-form textarea{
-  width:80%;
-}
-#review-form label{
-  color:black;
+input[type=text], select, textarea{
+  width:100%;
+  padding: 10px 20px;
+  box-sizing:border-box;
+  margin-top:5px;
+  margin-bottom:15px;
+  resize:vertical;
 }
 
+button[type=submit]{
+  background-color:#333;
+  padding:10px 20px;
+  border: none;
+  color:white;
+  border-radius: 4px;
+  cursor:pointer;
+}
+
+button[type=submit]:hover{
+  background-color:#666;
+}
+
+#form-label-wrapper{
+  border-radius:4px;
+  background-color:#333;
+  padding:20px;
+}
 /*largest breakpoint */
 @media screen and (min-width: 1120px){
   body{

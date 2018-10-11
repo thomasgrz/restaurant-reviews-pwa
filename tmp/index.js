@@ -97,7 +97,7 @@ module.exports = __webpack_require__(1);
 
 var idb = __webpack_require__(2);
 
-var staticCacheName = 'reviews-static-v8';
+var staticCacheName = 'reviews-static-v16';
 self.addEventListener('install', function (event) {
   event.waitUntil(
   /**
@@ -105,7 +105,7 @@ self.addEventListener('install', function (event) {
    */
   Promise.all([caches.open(staticCacheName).then(function (cache) {
     //add (relatively) static assets to cache
-    return cache.addAll(['/', 'index.html', 'restaurant.html', 'css/styles.css', 'js/main.js', 'js/restaurant_info.js']);
+    return cache.addAll(['/', 'index.html', 'js/dbhelper.js', 'restaurant.html', 'css/styles.css', 'js/main.js', 'js/restaurant_info.js']);
   }), //add restaurants to idb
   dbPromise.then(function (db) {
     return getRestaurants().then(function (restaurants) {
@@ -127,69 +127,91 @@ self.addEventListener('activate', function (event) {
   }));
 });
 self.addEventListener('fetch', function (event) {
-  var requestURLPath = new URL(event.request.url).pathname;
-  var serverPort = new URL(event.request.url).port;
-  debugger;
+  if (event.request.method === "GET") {
+    //parse the url the of the request
+    var url = new URL(event.request.url); //extract the pathname from the request the url
 
-  if (requestURLPath.includes("/restaurants") && serverPort == "1337") {
-    debugger;
-    event.respondWith(dbPromise.then(function (db) {
-      return db.transaction("restaurants", "readwrite").objectStore("restaurants").getAll();
-    }).then(function (jsonArray) {
-      return new Response(JSON.stringify(jsonArray), {
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        }
-      });
-    }));
-  } // if(requestURLPath.includes("/reviews") && serverPort == "1337"){
-  //     if(requestURLPath.search.includes("?restaurant_id")){
-  //         //extract the restaurant_id number 
-  //         let id = requestURLPath.search.match(/\d+$/)
-  //         //create array to store reviews that match our search
-  //         let arr = []
-  //         //respond to request with:
-  //         event.respondWith(
-  //             //open idb on restaurants-db
-  //             dbPromise.then((db)=>{
-  //                 //open a transaction, then open a cursor on the index 
-  //                 const tx = db.transaction("restaurant-reviews","readonly")
-  //                 const store = tx.objectStore("restaurant-reviews")
-  //                 store.index("restaurant_id")
-  //                     .then((index)=>{
-  //                         //iterator over the reviews
-  //                         //selecting and pushing those
-  //                         //that match the resaurant_id
-  //                         //to arr[]
-  //                         index.iterateCursor(cursor=>{
-  //                             if(!cursor) return;
-  //                             if(cursor.value.restaurant_id==id){
-  //                                 arr.push(cursor.value)
-  //                             }
-  //                             cursor.continue()
-  //                         })
-  //                     })
-  //                 tx.complete;
-  //                 //create & return a response out of the array containing all relevent reviews
-  //                 return new Response(JSON.stringify(arr),{"headers":{"content-type":"text/html; charset=utf-8"}})
-  //             })
-  //         )
-  // }
-  // }
+    var requestURLPath = new URL(event.request.url).pathname; //extract the port from the request url
 
+    var serverPort = new URL(event.request.url).port; //if its a request for restaurant data....
 
-  if (requestURLPath !== "/restaurants/") {
-    console.log(new URL(event.request.url).pathname);
-    /*adapted from https://developers.google.com/web/ilt/pwa/caching-files-with-service-worker */
-
-    event.respondWith(caches.open(staticCacheName).then(function (cache) {
-      return cache.match(event.request).then(function (response) {
-        return response || fetch(event.request).then(function (response) {
-          cache.put(event.request, response.clone());
-          return response;
+    if (requestURLPath.includes("/restaurants") && serverPort == "1337") {
+      return event.respondWith(dbPromise.then(function (db) {
+        //open database and extract all the restaurant data
+        return db.transaction("restaurants", "readwrite").objectStore("restaurants").getAll();
+      }) //reply from restaurant database if offline/slow connection
+      .then(function (jsonArray) {
+        return new Response(JSON.stringify(jsonArray), {
+          "headers": {
+            "content-type": "text/html; charset=utf-8"
+          }
         });
-      });
-    }));
+      }));
+    } //if its a request for sprestaurant reviews....
+    else if (requestURLPath.includes("/reviews") && serverPort == "1337") {
+        if (url.search.includes("?restaurant_id")) {
+          //extract the restaurant_id number 
+          var id = url.search.match(/\d+$/); //respond to request with:
+
+          if (navigator.onLine) {
+            return event.respondWith(fetch(event.request.url).then(function (response) {
+              return response.json();
+            }).then(function (json) {
+              return dbPromise.then(function (db) {
+                var tx = db.transaction("restaurant-reviews", "readwrite");
+                var store = tx.objectStore("restaurant-reviews");
+                json.map(function (review) {
+                  return store.put(review);
+                });
+                return new Response(JSON.stringify(json), {
+                  "headers": {
+                    "content-type": "text/html; charset=utf-8"
+                  }
+                });
+              });
+            }));
+          } else {
+            return event.respondWith( //open idb on restaurants-db
+            dbPromise.then(function (db) {
+              //open a transaction, then open a cursor on the index 
+              var tx = db.transaction("restaurant-reviews", "readonly");
+              var store = tx.objectStore("restaurant-reviews"); //iterate over everything within the index
+
+              return store.getAll();
+            }).then(function (reviews) {
+              var arr = reviews.filter(function (review) {
+                return review.restaurant_id == id;
+              });
+              return new Response(JSON.stringify(arr), {
+                "headers": {
+                  "content-type": "text/html; charset=utf-8"
+                }
+              });
+            }));
+          }
+        }
+      } //if requesting static files / data...
+      else {
+          /*adapted from https://developers.google.com/web/ilt/pwa/caching-files-with-service-worker */
+          var options = {};
+
+          if (url.pathname.includes("restaurant.html")) {
+            options.ignoreSearch = true;
+          } //reply from cached assets if avaialble or cache the resouce and reply
+          //from the network
+
+
+          return event.respondWith(caches.open(staticCacheName).then(function (cache) {
+            return cache.match(event.request, options).then(function (response) {
+              return response || fetch(event.request).then(function (response) {
+                cache.put(event.request, response.clone());
+                return response;
+              });
+            });
+          }).catch(function (error) {
+            console.error("there's been a problem in the caching within service worker: ", error);
+          }));
+        }
   }
 });
 
