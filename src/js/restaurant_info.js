@@ -6,6 +6,8 @@ var newMap;
  */
 document.addEventListener('DOMContentLoaded', (event) => {  
   initMap();
+  addReviewLogic();
+  DBHelper.submitOfflineReviews();
 });
 
 /**
@@ -108,6 +110,7 @@ image.setAttribute('alt',
   }
   // fill reviews
   fillReviewsHTML();
+
 }
 
 /**
@@ -166,7 +169,6 @@ createReviewHTML = (review) => {
   const name = document.createElement('p');
   name.innerHTML = review.name;
   li.appendChild(name);
-
   const date = document.createElement('p');
   date.innerHTML = new Date(review.createdAt).toGMTString();
   li.appendChild(date);
@@ -208,35 +210,31 @@ getParameterByName = (name, url) => {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
-function addReview(form){
-  let id = this.window.location.search.slice(4,);
-  let reviewerName = form.name.value
-  let reviewRating = form.rating.value
-  let reviewComments = form.review.value
-  const ul = document.getElementById("reviews-list")
-  ul.appendChild(createReviewHTML({
-    name:reviewerName,
-    rating:reviewRating,
-    comments:reviewComments,
-    date: new Date().toGMTString()
-  }))
-  form.reset()
-  return fetch("http://localhost:1337/reviews/",{
-    method: "POST",
-    headers:{
-      "content-type": "application/json; charset=utf-8"
-    },
-    body: JSON.stringify({
-      restaurant_id: id,
-      name: reviewerName,
-      rating: reviewRating,
-      comments: reviewComments
-    })
+
+function addReviewLogic(){
+  let id = window.location.search.slice(4,)
+  let form = document.getElementById("review-form")
+  form.addEventListener("submit",(event)=>{
+    event.preventDefault()
+    let name = form.name.value
+    let review = form.review.value
+    let rating = form.rating.value
+
+    let parameters = {
+      "restaurant_id": id,
+      "name": name,
+      "rating": rating,
+      "comments": review
+    }
+    let currentDate = Date.now()
+    let reviewToPost = Object.assign(parameters, {createdAt: new Date(currentDate).toGMTString()})
+    const ul = document.getElementById("reviews-list")
+    ul.appendChild(
+      createReviewHTML(reviewToPost)
+    )
+    form.reset()
+
+    DBHelper.sendReview(parameters)
   })
-  .catch((err)=>console.log("attempted to add review to server"))
-  
 }
 
-window.addEventListener("offline", function(e){
-  console.log(e,"youre offline, friendo")
-})

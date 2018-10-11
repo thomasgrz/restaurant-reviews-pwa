@@ -201,5 +201,91 @@ class DBHelper {
     return marker;
   } */
 
+  //send reviews to server or store them offline 
+  static sendReview(parametersObject){
+    const key = Object.keys(localStorage).length + 1;
+    if(navigator.onLine){
+      fetch("http://localhost:1337/reviews/",{
+        method: "POST",
+        headers: {
+          "content-type":"application/json; charset=utf-8"
+        },
+        body: JSON.stringify(parametersObject)
+      })
+    }else if(!navigator.onLine){
+      localStorage.setItem(key, JSON.stringify({
+        type: "review",
+        review: parametersObject
+      }))
+    }
+  }
+
+  //if you're online again submit stored reviews
+  static submitOfflineReviews(){
+    const keysArray = Object.keys(localStorage)
+    let counter = 0
+    while(counter<keysArray.length && navigator.onLine){
+      let content = JSON.parse(localStorage.getItem(keysArray[counter]))
+      if(content.type==="review"){
+        let review = content.review
+        fetch("http://localhost:1337/reviews/",{
+          method: "POST",
+          headers: {
+            "content-type":"texgt/html; charset=utf-8",
+          },
+          body: JSON.stringify(review)
+       })
+      }else if(content.type==="favorite"){
+        console.log(content.id, content.status)
+        fetch(`http://localhost:1337/restaurants/${JSON.parse(content.id)}/?is_favorite=${JSON.parse(content.status)}`,{
+          method: "PUT"
+       }).then(()=>{
+        localStorage.removeItem(keysArray[counter])
+       })
+      }      
+      counter++;
+    }
+  }
+
+  static favoriteReviewLogic(element){
+    element.addEventListener("click",()=>{
+      let newObj;
+      let id = new URL(element.parentElement.getElementsByTagName("a")[0].href).search.slice(4,)
+      let status = !JSON.parse(element.getAttribute("isfavorite"))
+      
+      element.setAttribute("isfavorite",status)
+      Promise.all([
+        this.pushFavorite(id, status)
+      ])
+      .then(()=>{
+       idb.open("restaurants-db")
+        .then((db)=>{
+          db.transaction("restaurants","readwrite").objectStore("restaurants").get(JSON.parse(id))
+          .then((entry)=>{
+            newObj = Object.assign(entry,{is_favorite: status})
+            db.transaction("restaurants","readwrite").objectStore("restaurants").put(newObj)
+          })
+        })
+      })
+    })
+  }
+
+  static pushFavorite(id, status){
+    debugger
+    if(navigator.onLine){
+      fetch(`http://localhost:1337/restaurants/${id}/?is_favorite=${status}`,{
+        method:"PUT"
+      })
+    }else{ 
+      const key = Object.keys(localStorage).length + 1
+      localStorage.setItem(key, JSON.stringify({
+        type: "favorite",
+        status: status,
+        id: id
+      }))
+    }
+  }
 }
+
+
 
