@@ -6,11 +6,14 @@ const browserSync = require("browser-sync").create();
 const config = require("./webpack.config.js");
 const inject = require("gulp-inject");
 const babel = require("gulp-babel")
+const fs = require("fs")
+const replace = require("gulp-replace")
 const paths = {
     originals:"./originals/**/*",
     src: "./src",
     srcCSS: "./src/**/*.css",
     srcJS: "./src/**/*.js",
+    srcSW:"./src/js/index.js",
     srcHTML: "./src/*.html",
     srcImages: "./src/images/*.jpg",
     nodeModules: "/**/node_modules/**/",
@@ -26,7 +29,8 @@ const excludeNodeModules = function(extension){
 const excludeDirectory = function(directory){
     return ["!" + directory + "/"].toString();
 }
-
+const cachePattern = new RegExp("//insertImages here*/")
+const imageDirArray = fs.readdirSync("src/images/")
 gulp.task("inject", function(){
     let target = gulp.src([paths.srcHTML]);
     let sources = gulp.src([paths.tmpJS]);
@@ -96,4 +100,14 @@ gulp.task("default", build)
 gulp.task("dist",function(){
     return gulp.src(["./tmp/**/*"])
         .pipe(gulp.dest([paths.dist]))
+})
+
+gulp.task("precache",function(){
+    return gulp.src(["tmp/index.js"])
+        .pipe(replace("//insertImages here*/",function(){
+            return JSON.stringify(
+                fs.readdirSync("src/images").map((file)=>"images/".concat(file))
+            )
+        }))
+        .pipe(gulp.dest("tmp/"))
 })
