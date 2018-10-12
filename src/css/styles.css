@@ -143,6 +143,17 @@ nav h1 a {
   padding: 0 10px;
   width: 200px;
 }
+.filter{
+  display:block;
+  padding-bottom:1px;
+}
+.filter-options{
+  height:100%;
+  padding-bottom:5px;
+  box-sizing:border-box;
+  flex:1;
+  flex-direction: column;
+}
 
 /* ====================== Restaurant Listing ====================== */
 #restaurants-list {
@@ -360,6 +371,7 @@ button[type=submit]:hover{
     width: 20%;
     padding:10px;
   }
+  
 }
 /*medium break point*/
 @media screen and (max-width: 900px){
@@ -374,7 +386,7 @@ button[type=submit]:hover{
   }
 }
 /*smallest break point*/
-@media screen and (max-width: 550px){
+@media screen and (max-width: 629px){
   body{
     max-width:100%;
   }
