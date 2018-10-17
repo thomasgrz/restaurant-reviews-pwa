@@ -143,6 +143,17 @@ nav h1 a {
   padding: 0 10px;
   width: 200px;
 }
+.filter{
+  display:block;
+  padding-bottom:1px;
+}
+.filter-options{
+  height:100%;
+  padding-bottom:5px;
+  box-sizing:border-box;
+  flex:1;
+  flex-direction: column;
+}
 
 /* ====================== Restaurant Listing ====================== */
 #restaurants-list {
@@ -360,20 +371,22 @@ button[type=submit]:hover{
     width: 20%;
     padding:10px;
   }
+  
 }
 /*medium break point*/
 @media screen and (max-width: 900px){
   #restaurants-list {
     max-width: 100%;
-    margin-right:20px;
+    box-sizing:border-box;
   }
   #restaurants-list li{
-    max-width:30%;
-    padding: 10px;
+    max-width:50%;
+    padding: 5px;
+    box-sizing:border-box;
   }
 }
 /*smallest break point*/
-@media screen and (max-width: 550px){
+@media screen and (max-width: 629px){
   body{
     max-width:100%;
   }
@@ -389,8 +402,8 @@ button[type=submit]:hover{
     max-width:100%;
     flex-direction:column;
     flex-wrap:nowrap;
-    margin-left:0;
     padding-left:0;
+   
   }
   #restaurants-list li{
     width:100%;
@@ -399,6 +412,8 @@ button[type=submit]:hover{
     margin-left:0;
     padding-left:10px;
     padding-right:10px;
+    margin: auto;
+    box-sizing:border-box;
   }
   #restaurant-img{
     max-width:100%;
