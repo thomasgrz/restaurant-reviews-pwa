@@ -1,4 +1,5 @@
-#restaurant-reviews-pws
+# restaurant-reviews-pws
+
 Restaurant Reviews is PWA (Progressive Web App) which is a project designed as apart of the Google Developer Scholarship Program and may contain assets contributed from various third party sources therein.
 Requirements: Node.js, Python2.7 or Python3, and Chrome or similar web browser.
 
